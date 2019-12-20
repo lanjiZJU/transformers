@@ -1378,10 +1378,10 @@ class FastPreTrainedTokenizer(PreTrainedTokenizer):
                                       return_overflowing_tokens=return_overflowing_tokens,
                                       return_special_tokens_mask=return_special_tokens_mask)
 
-    def _tokenize(self, text):
+    def tokenize(self, text):
         return self.tokenizer.encode(text).tokens
 
-    def _convert_token_to_id(self, token):
+    def _convert_token_to_id_with_added_voc(self, token):
         return self.tokenizer.token_to_id(token)
 
     def _convert_id_to_token(self, index):
@@ -1399,16 +1399,24 @@ class FastPreTrainedTokenizer(PreTrainedTokenizer):
                      return_attention_mask=True,
                      return_overflowing_tokens=False,
                      return_special_tokens_mask=False):
-        return [ self._convert_encoding(encoding,
-                                        return_tensors=return_tensors,
-                                        return_token_type_ids=return_token_type_ids,
-                                        return_attention_mask=return_attention_mask,
-                                        return_overflowing_tokens=return_overflowing_tokens,
-                                        return_special_tokens_mask=return_special_tokens_mask)
-            for encoding in self.tokenizer.encode_batch(texts)]
+        return [self._convert_encoding(encoding,
+                                       return_tensors=return_tensors,
+                                       return_token_type_ids=return_token_type_ids,
+                                       return_attention_mask=return_attention_mask,
+                                       return_overflowing_tokens=return_overflowing_tokens,
+                                       return_special_tokens_mask=return_special_tokens_mask)
+                for encoding in self.tokenizer.encode_batch(texts)]
 
-    def decode(self, tokens):
-        return self.tokenizer.decode(tokens)
+    def decode(self, token_ids, skip_special_tokens=False, clean_up_tokenization_spaces=True):
+        text = self.tokenizer.decode(token_ids, skip_special_tokens)
 
-    def decode_batch(self, ids_batch):
-        return self.tokenizer.decode_batch(ids_batch)
+        if clean_up_tokenization_spaces:
+            clean_text = self.clean_up_tokenization(text)
+            return clean_text
+        else:
+            return text
+
+    def decode_batch(self, ids_batch, skip_special_tokens=False, clear_up_tokenization_spaces=True):
+        return [self.clean_up_tokenization(text)
+                if clear_up_tokenization_spaces else text
+                for text in self.tokenizer.decode_batch(ids_batch, skip_special_tokens)]
