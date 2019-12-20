@@ -1322,6 +1322,9 @@ class PreTrainedTokenizer(object):
         return out_string
 
 class FastPreTrainedTokenizer(PreTrainedTokenizer):
+    def __init__(self, **kwargs):
+        super(FastPreTrainedTokenizer, self).__init__(**kwargs)
+
     @property
     def tokenizer(self):
         if self._tokenizer is None:
@@ -1334,12 +1337,12 @@ class FastPreTrainedTokenizer(PreTrainedTokenizer):
             raise NotImplementedError
         return self._decoder
 
-    def __init__(self, **kwargs):
-        super(FastPreTrainedTokenizer, self).__init__(**kwargs)
-
     @property
     def vocab_size(self):
-        return self.tokenizer.vocab_size
+        return self.tokenizer.vocab_size(False)
+
+    def __len__(self):
+        return self.tokenizer.vocab_size(True)
 
     def _convert_encoding(self,
                           encoding,
