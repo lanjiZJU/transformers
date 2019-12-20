@@ -265,6 +265,7 @@ class GPT2TokenizerFast(FastPreTrainedTokenizer):
                 self.pad_token if self.pad_token is not None else ""
             )
             self._decoder = decoders.ByteLevel.new()
+            self._update_special_tokens()
 
         except (AttributeError, ImportError) as e:
             logger.error("Make sure you installed `tokenizers` with `pip install tokenizers==0.0.8`")

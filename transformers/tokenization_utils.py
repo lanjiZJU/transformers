@@ -1339,10 +1339,13 @@ class FastPreTrainedTokenizer(PreTrainedTokenizer):
 
     @property
     def vocab_size(self):
-        return self.tokenizer.vocab_size(False)
+        return self.tokenizer.get_vocab_size(False)
 
     def __len__(self):
-        return self.tokenizer.vocab_size(True)
+        return self.tokenizer.get_vocab_size(True)
+
+    def _update_special_tokens(self):
+        self.tokenizer.add_special_tokens(self.all_special_tokens)
 
     def _convert_encoding(self,
                           encoding,

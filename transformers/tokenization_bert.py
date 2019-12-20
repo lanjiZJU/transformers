@@ -314,7 +314,8 @@ class BertTokenizerFast(FastPreTrainedTokenizer):
                 self.pad_token
             )
             self._decoder = decoders.WordPiece.new()
-            
+            self._update_special_tokens()
+
         except (AttributeError, ImportError) as e:
             logger.error("Make sure you installed `tokenizers` with `pip install tokenizers==0.0.8`")
             raise e
