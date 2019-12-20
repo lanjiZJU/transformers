@@ -287,31 +287,31 @@ class BertTokenizerFast(FastPreTrainedTokenizer):
                                                 pad_token=pad_token, cls_token=cls_token,
                                                 mask_token=mask_token, **kwargs)
 
-        self.tokenizer = Tokenizer(models.WordPiece.from_files(
+        self._tokenizer = Tokenizer(models.WordPiece.from_files(
             vocab_file,
             unk_token=unk_token
         ))
-        self.tokenizer.with_pre_tokenizer(pre_tokenizers.BertPreTokenizer.new(
+        self._tokenizer.with_pre_tokenizer(pre_tokenizers.BertPreTokenizer.new(
             do_basic_tokenize=do_basic_tokenize,
             do_lower_case=do_lower_case,
             tokenize_chinese_chars=tokenize_chinese_chars,
             never_split=never_split if never_split is not None else [],
         ))
-        self.tokenizer.with_decoder(decoders.WordPiece.new())
-        self.tokenizer.with_post_processor(processors.BertProcessing.new(
-            (sep_token, self.tokenizer.token_to_id(sep_token)),
-            (cls_token, self.tokenizer.token_to_id(cls_token)),
+        self._tokenizer.with_decoder(decoders.WordPiece.new())
+        self._tokenizer.with_post_processor(processors.BertProcessing.new(
+            (sep_token, self._tokenizer.token_to_id(sep_token)),
+            (cls_token, self._tokenizer.token_to_id(cls_token)),
         ))
         if max_length is not None:
-            self.tokenizer.with_truncation(max_length, stride, truncation_strategy)
-        self.tokenizer.with_padding(
+            self._tokenizer.with_truncation(max_length, stride, truncation_strategy)
+        self._tokenizer.with_padding(
             max_length if pad_to_max_length else None,
             self.padding_side,
             self.pad_token_id,
             self.pad_token_type_id,
             self.pad_token
         )
-        self.decoder = decoders.WordPiece.new()
+        self._decoder = decoders.WordPiece.new()
 
 
 class BasicTokenizer(object):

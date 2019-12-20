@@ -249,16 +249,16 @@ class GPT2TokenizerFast(FastPreTrainedTokenizer):
                  max_length=None, stride=0, truncation_strategy='longest_first', **kwargs):
         super(GPT2TokenizerFast, self).__init__(bos_token=bos_token, eos_token=eos_token, unk_token=unk_token, **kwargs)
 
-        self.tokenizer = Tokenizer(models.BPE.from_files(vocab_file, merges_file))
-        self.tokenizer.with_pre_tokenizer(pre_tokenizers.ByteLevel.new(add_prefix_space))
-        self.tokenizer.with_decoder(decoders.ByteLevel.new())
+        self._tokenizer = Tokenizer(models.BPE.from_files(vocab_file, merges_file))
+        self._tokenizer.with_pre_tokenizer(pre_tokenizers.ByteLevel.new(add_prefix_space))
+        self._tokenizer.with_decoder(decoders.ByteLevel.new())
         if max_length:
-            self.tokenizer.with_truncation(max_length, stride, truncation_strategy)
-        self.tokenizer.with_padding(
+            self._tokenizer.with_truncation(max_length, stride, truncation_strategy)
+        self._tokenizer.with_padding(
             max_length if pad_to_max_length else None,
             self.padding_side,
             self.pad_token_id if self.pad_token_id is not None else 0,
             self.pad_token_type_id,
             self.pad_token if self.pad_token is not None else ""
         )
-        self.decoder = decoders.ByteLevel.new()
+        self._decoder = decoders.ByteLevel.new()
