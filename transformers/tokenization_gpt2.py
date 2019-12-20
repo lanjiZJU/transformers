@@ -244,7 +244,7 @@ class GPT2TokenizerFast(FastPreTrainedTokenizer):
     max_model_input_sizes = PRETRAINED_POSITIONAL_EMBEDDINGS_SIZES
 
     def __init__(self, vocab_file, merges_file, unk_token="<|endoftext|>", bos_token="<|endoftext|>",
-                 eos_token="<|endoftext|>", pad_to_max_length=False, add_prefix_space=True,
+                 eos_token="<|endoftext|>", pad_to_max_length=False, add_prefix_space=False,
                  max_length=None, stride=0, truncation_strategy='longest_first', **kwargs):
 
         try:
@@ -253,6 +253,7 @@ class GPT2TokenizerFast(FastPreTrainedTokenizer):
             super(GPT2TokenizerFast, self).__init__(bos_token=bos_token, eos_token=eos_token, unk_token=unk_token, **kwargs)
 
             self._tokenizer = Tokenizer(models.BPE.from_files(vocab_file, merges_file))
+            self._update_special_tokens()
             self._tokenizer.with_pre_tokenizer(pre_tokenizers.ByteLevel.new(add_prefix_space))
             self._tokenizer.with_decoder(decoders.ByteLevel.new())
             if max_length:
@@ -265,7 +266,6 @@ class GPT2TokenizerFast(FastPreTrainedTokenizer):
                 self.pad_token if self.pad_token is not None else ""
             )
             self._decoder = decoders.ByteLevel.new()
-            self._update_special_tokens()
 
         except (AttributeError, ImportError) as e:
             logger.error("Make sure you installed `tokenizers` with `pip install tokenizers==0.0.8`")

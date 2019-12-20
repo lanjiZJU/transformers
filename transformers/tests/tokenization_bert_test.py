@@ -24,12 +24,15 @@ from transformers.tokenization_bert import (BasicTokenizer,
                                                     _is_control, _is_punctuation,
                                                     _is_whitespace, VOCAB_FILES_NAMES)
 
+from transformers.tokenization_bert import BertTokenizerFast
+
 from .tokenization_tests_commons import CommonTestCases
 from .utils import slow
 
 class BertTokenizationTest(CommonTestCases.CommonTokenizerTester):
 
     tokenizer_class = BertTokenizer
+    test_rust_tokenizer = True
 
     def setUp(self):
         super(BertTokenizationTest, self).setUp()
@@ -45,6 +48,9 @@ class BertTokenizationTest(CommonTestCases.CommonTokenizerTester):
     def get_tokenizer(self, **kwargs):
         return BertTokenizer.from_pretrained(self.tmpdirname, **kwargs)
 
+    def get_rust_tokenizer(self, **kwargs):
+        return BertTokenizerFast.from_pretrained(self.tmpdirname, **kwargs)
+
     def get_input_output_texts(self):
         input_text = u"UNwant\u00E9d,running"
         output_text = u"unwanted, running"
@@ -56,6 +62,29 @@ class BertTokenizationTest(CommonTestCases.CommonTokenizerTester):
         tokens = tokenizer.tokenize(u"UNwant\u00E9d,running")
         self.assertListEqual(tokens, ["un", "##want", "##ed", ",", "runn", "##ing"])
         self.assertListEqual(tokenizer.convert_tokens_to_ids(tokens), [7, 4, 5, 10, 8, 9])
+
+    def test_rust_and_python_full_tokenizers(self):
+        if not self.test_rust_tokenizer:
+            return
+
+        tokenizer = self.get_tokenizer()
+        rust_tokenizer = self.get_rust_tokenizer(add_special_tokens=False)
+
+        sequence = u"UNwant\u00E9d,running"
+
+        tokens = tokenizer.tokenize(sequence)
+        rust_tokens = rust_tokenizer.tokenize(sequence)
+        self.assertListEqual(tokens, rust_tokens)
+
+        ids = tokenizer.encode(sequence, add_special_tokens=False)
+        rust_ids = rust_tokenizer.encode(sequence)
+        self.assertListEqual(ids, rust_ids)
+
+        rust_tokenizer = self.get_rust_tokenizer()
+        ids = tokenizer.encode(sequence)
+        rust_ids = rust_tokenizer.encode(sequence)
+        self.assertListEqual(ids, rust_ids)
+
 
     def test_chinese(self):
         tokenizer = BasicTokenizer()

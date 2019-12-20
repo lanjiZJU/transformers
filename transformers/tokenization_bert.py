@@ -281,7 +281,7 @@ class BertTokenizerFast(FastPreTrainedTokenizer):
                  unk_token="[UNK]", sep_token="[SEP]", pad_token="[PAD]", cls_token="[CLS]",
                  mask_token="[MASK]", tokenize_chinese_chars=True,
                  max_length=None, pad_to_max_length=False, stride=0,
-                 truncation_strategy='longest_first', **kwargs):
+                 truncation_strategy='longest_first', add_special_tokens=True, **kwargs):
 
         try:
             from tokenizers import Tokenizer, models, pre_tokenizers, decoders, processors
@@ -293,6 +293,7 @@ class BertTokenizerFast(FastPreTrainedTokenizer):
                 vocab_file,
                 unk_token=unk_token
             ))
+            self._update_special_tokens()
             self._tokenizer.with_pre_tokenizer(pre_tokenizers.BertPreTokenizer.new(
                 do_basic_tokenize=do_basic_tokenize,
                 do_lower_case=do_lower_case,
@@ -300,10 +301,12 @@ class BertTokenizerFast(FastPreTrainedTokenizer):
                 never_split=never_split if never_split is not None else [],
             ))
             self._tokenizer.with_decoder(decoders.WordPiece.new())
-            self._tokenizer.with_post_processor(processors.BertProcessing.new(
-                (sep_token, self._tokenizer.token_to_id(sep_token)),
-                (cls_token, self._tokenizer.token_to_id(cls_token)),
-            ))
+
+            if add_special_tokens:
+                self._tokenizer.with_post_processor(processors.BertProcessing.new(
+                    (sep_token, self._tokenizer.token_to_id(sep_token)),
+                    (cls_token, self._tokenizer.token_to_id(cls_token)),
+                ))
             if max_length is not None:
                 self._tokenizer.with_truncation(max_length, stride, truncation_strategy)
             self._tokenizer.with_padding(
@@ -314,7 +317,6 @@ class BertTokenizerFast(FastPreTrainedTokenizer):
                 self.pad_token
             )
             self._decoder = decoders.WordPiece.new()
-            self._update_special_tokens()
 
         except (AttributeError, ImportError) as e:
             logger.error("Make sure you installed `tokenizers` with `pip install tokenizers==0.0.8`")
