@@ -36,8 +36,8 @@ from tqdm import tqdm, trange
 
 import sys
 sys.path.append("./")
-from examples.bert_crf.utils_ner import convert_examples_to_features, get_labels, read_examples_from_file
-from examples.bert_crf.bert_lstm_crf import BertLstmCrf
+from transformers.examples.bert_crf.utils_ner import convert_examples_to_features, get_labels, read_examples_from_file
+from transformers.examples.bert_crf.bert_lstm_crf import BertLstmCrf
 
 from transformers import AdamW, get_linear_schedule_with_warmup, BertModel
 from transformers import WEIGHTS_NAME, BertConfig, BertForTokenClassification, BertTokenizer
@@ -47,9 +47,9 @@ from transformers import CamembertConfig, CamembertForTokenClassification, Camem
 
 logger = logging.getLogger(__name__)
 
-ALL_MODELS = sum(
-    (tuple(conf.pretrained_config_archive_map.keys()) for conf in (BertConfig, RobertaConfig, DistilBertConfig)),
-    ())
+# ALL_MODELS = sum(
+#     (tuple(conf.pretrained_config_archive_map.keys()) for conf in (BertConfig, RobertaConfig, DistilBertConfig)),
+#     ())
 
 MODEL_CLASSES = {
     "bert": (BertConfig, BertModel, BertTokenizer),
@@ -335,7 +335,7 @@ def main():
     parser.add_argument("--model_type", default=None, type=str, required=True,
                         help="Model type selected in the list: " + ", ".join(MODEL_CLASSES.keys()))
     parser.add_argument("--model_name_or_path", default=None, type=str, required=True,
-                        help="Path to pre-trained model or shortcut name selected in the list: " + ", ".join(ALL_MODELS))
+                        help="Path to pre-trained model or shortcut name selected in the list: ")# + ", ".join(ALL_MODELS)
     parser.add_argument("--output_dir", default=None, type=str, required=True,
                         help="The output directory where the model predictions and checkpoints will be written.")
 
