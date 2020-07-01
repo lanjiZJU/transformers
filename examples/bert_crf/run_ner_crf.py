@@ -36,8 +36,8 @@ from tqdm import tqdm, trange
 
 import sys
 sys.path.append("./")
-from transformers.examples.bert_crf.utils_ner import convert_examples_to_features, get_labels, read_examples_from_file
-from transformers.examples.bert_crf.bert_lstm_crf import BertLstmCrf
+from transformers_plus.examples.bert_crf.utils_ner import convert_examples_to_features, get_labels, read_examples_from_file
+from transformers_plus.examples.bert_crf.bert_lstm_crf import BertLstmCrf
 
 from transformers import AdamW, get_linear_schedule_with_warmup, BertModel
 from transformers import WEIGHTS_NAME, BertConfig, BertForTokenClassification, BertTokenizer
