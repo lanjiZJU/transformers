@@ -19,7 +19,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 import torch
 
-from examples.bert_crf.conditional_random_field import ConditionalRandomField
+from transformers.examples.bert_crf.conditional_random_field import ConditionalRandomField
 
 
 class BertLstmCrf(nn.Module):
