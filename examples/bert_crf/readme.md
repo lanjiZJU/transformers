@@ -10,7 +10,7 @@ The code for CRF module comes from AllenNLP.
 ## how-to-use
 ```bash
 
-# run ner crf
+# run
 python transformers1/examples/bert_crf/run_ner_crf.py \
 --data_dir ./ \
 --labels ./labels.txt \
